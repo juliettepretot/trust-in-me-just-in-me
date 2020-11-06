@@ -1,9 +1,5 @@
 <html>
   <head>
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline';"
-    />
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
     <title>Trust in me, just in me</title>
     <style>
@@ -20,24 +16,45 @@
   </head>
 
   <body>
-    <p>Select a .html file to render in a secure, local only enviroment:</p>
-    <input type="file" id="file-selector" accept="text/html" />
-    <iframe sandbox="allow-scripts" id="csp-iframe"></iframe>
+    <p>
+      This
+      <a href="https://gph.is/g/aXLmyvR" target="_blank">trusted</a> website
+      only renders websites that enforce
+      <code
+        >default-src 'none'; sandbox allow-scripts; script-src 'unsafe-inline';
+        style-src 'unsafe-inline';</code
+      >
+      as a CSP, preventing them from leaking sensitive data.
+    </p>
+    <form id="url-form">
+      <label for="url">URL to load:</label>
+      <input
+        type="text"
+        id="url"
+        name="url"
+        required
+        value="https://csp-locked-client-side-base64.web.app/"
+      />
+      <button type="submit">Load</button>
+    </form>
+    <iframe
+      id="csp-iframe"
+      sandbox="allow-scripts"
+      csp="default-src 'none'; sandbox allow-scripts; script-src 'unsafe-inline';
+      style-src 'unsafe-inline';"
+    ></iframe>
     <script type="module">
-      const fileSelector = document.getElementById('file-selector')
-      function readFileContent(file) {
-        const reader = new FileReader()
-        return new Promise((resolve, reject) => {
-          reader.onload = (event) => resolve(event.target.result)
-          reader.onerror = (error) => reject(error)
-          reader.readAsText(file)
-        })
+      function handleSubmit() {
+        event.preventDefault()
+
+        const url = document.getElementById('url').value
+        console.log(url)
+        document.getElementById('csp-iframe').setAttribute('src', url)
       }
-      fileSelector.addEventListener('change', async (event) => {
-        const file = event.target.files[0]
-        const parsedFile = await readFileContent(file)
-        document.getElementById('csp-iframe').setAttribute('srcdoc', parsedFile)
-      })
+
+      document
+        .getElementById('url-form')
+        .addEventListener('submit', handleSubmit)
     </script>
   </body>
 </html>
