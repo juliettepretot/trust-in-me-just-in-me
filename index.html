@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline';"
+    />
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <title>Trust in me, just in me</title>
+    <style>
+      body {
+        min-height: 100%;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      iframe {
+        flex-grow: 1;
+      }
+    </style>
+  </head>
+
+  <body>
+    <p>Select a .html file to render in a secure, local only enviroment:</p>
+    <input type="file" id="file-selector" accept="text/html" />
+    <iframe sandbox="allow-scripts" id="csp-iframe"></iframe>
+    <script type="module">
+      const fileSelector = document.getElementById('file-selector')
+      function readFileContent(file) {
+        const reader = new FileReader()
+        return new Promise((resolve, reject) => {
+          reader.onload = (event) => resolve(event.target.result)
+          reader.onerror = (error) => reject(error)
+          reader.readAsText(file)
+        })
+      }
+      fileSelector.addEventListener('change', async (event) => {
+        const file = event.target.files[0]
+        const parsedFile = await readFileContent(file)
+        document.getElementById('csp-iframe').setAttribute('srcdoc', parsedFile)
+      })
+    </script>
+  </body>
+</html>
